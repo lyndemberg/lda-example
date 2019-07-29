@@ -26,20 +26,27 @@ for text in docs_texts:
     docs_pre_processed.append(text_pre_processed)
 
 print(f'docs pre processed-> {len(docs_pre_processed)}')
+
+# dictionary maps words of documents to ID -> WORD
 dictionary = gensim.corpora.Dictionary(docs_pre_processed)
 print(f'length words in dictionary=> {len(dictionary)}')
-# -------OPTIONAL----------
-dictionary.filter_extremes(no_below=3, no_above=0.8, keep_n=100000)
+
+# apply filter to preserve relevants terms
+dictionary.filter_extremes(no_below=3, no_above=0.5, keep_n=100000)
 print(f'length words in dictionary after filter=> {len(dictionary)}')
+
 bow_corpus = [dictionary.doc2bow(doc) for doc in docs_pre_processed]
+
+# checking specific document
 bow_corpus_doc = bow_corpus[2]
 for i in range(len(bow_corpus_doc)):
     print(f'Palavra {bow_corpus_doc[i][0]} '
           f'({dictionary[bow_corpus_doc[i][0]]}) '
           f' = {bow_corpus_doc[i][1]} ocorrências')
 
-# LDA MODEL
+# LDA model training
 lda_model = gensim.models.LdaMulticore(bow_corpus, num_topics=6, id2word=dictionary, passes=10, workers=2)
+
 print(lda_model.get_topic_terms(0))
 for idx, topic in lda_model.print_topics(-1):
     print(f'Tópico: {idx} \nPalavras: {topic}')
