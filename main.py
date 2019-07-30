@@ -3,11 +3,11 @@ from pre_process import *
 import os
 import glob
 import gensim
+from gensim.test.utils import datapath
 current_dir = os.path.dirname(os.path.realpath(__file__))
 os.environ['TIKA_PATH'] = current_dir
 os.environ['TIKA_LOG_PATH'] = current_dir
 DOCS_DIR = os.path.join(current_dir, 'docs')
-
 
 def read_text_doc_file(path):
     parsed = parser.from_file(path)
@@ -52,4 +52,17 @@ for idx, topic in lda_model.print_topics(-1):
     print(f'Tópico: {idx} \nPalavras: {topic}')
     print('\n')
 
-lda_model.show_topic(0)
+print(lda_model.show_topic(0))
+
+if not os.path.exists('export'):
+    os.makedirs('export')
+    print("Directory Created ")
+else:
+    print("Directory 'export' already exists")
+
+lda_model.save('export/lda.model')
+print('lda_model saved!')
+lda_loaded = lda_model.load('export/lda.model')
+print(f'load data saved-->{lda_loaded.show_topic(0)}')
+
+
